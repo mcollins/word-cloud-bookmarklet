@@ -1,3 +1,4 @@
+<!doctype html>
 <a href="javascript:(function() {
     var i,
         theIframe,
@@ -15,9 +16,8 @@
     while(node != null && node != root) {
         
         if (node.nodeType == document.TEXT_NODE) {
-
-            wordList = node.nodeValue.split(' '); /* split text on spaces */
-
+            var val = node.nodeValue ? node.nodeValue : node.innerText;
+            wordList = val.split(' '); /* split text on spaces */
             for ( i = 0; wordList && i < wordList.length; i++) {
                 word = wordList[i].replace(wordRE, ''); /* trim string */
 
@@ -64,11 +64,12 @@
         theIframe.style.backgroundColor = '#ffffff';
     }
     
-    document.body.appendChild(theIframe);
+    document.body.appendChild(theIframe);    
     
-    htmlStr = '';
     
-    htmlStr += '<div style=\'padding:5px\'>';
+    htmlStr = '<!doctype html><html><body>';
+    
+    htmlStr += '<div style=\'padding:5px\'>'; 
         
     for ( i = 0; i < wordArr.length; i++) {
         word = wordArr[i];
@@ -77,11 +78,11 @@
         
     }   
     
-    htmlStr += '</div>';
+    htmlStr += '</div></body></html>';
+    setTimeout(function() {
+        theIframe.contentDocument.body.innerHTML = htmlStr;
+    });
     
-    theIframe.contentDocument.body.innerHTML = htmlStr;
-    
-    theIframe.hidden = false;
     
     
     
