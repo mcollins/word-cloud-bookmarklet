@@ -1,0 +1,97 @@
+<a href="javascript:(function() {
+    var i,
+        theIframe,
+        fontSize,
+        htmlStr,
+        root = document.body,
+        node = root.firstChild,
+        word,
+        wordList,
+        wordArr = [],
+        wordMap = {},
+        wordRE = new RegExp('[^a-zA-Z]*', 'gi');
+        
+    /* walk through the DOM and pick out all the text nodes */
+    while(node != null && node != root) {
+        
+        if (node.nodeType == document.TEXT_NODE) {
+
+            wordList = node.nodeValue.split(' '); /* split text on spaces */
+
+            for ( i = 0; wordList && i < wordList.length; i++) {
+                word = wordList[i].replace(wordRE, ''); /* trim string */
+
+                if (word && word.length > 3) {
+                    word = word.toLowerCase(); /* normalize to lowercase */
+                    if (wordMap[word]) {
+                        wordMap[word]++;
+                    } else {
+                        wordArr.push(word);
+                        wordMap[word] = 1;
+                    }
+                }
+            }
+        }
+        
+        if (node.hasChildNodes()) { /* depth-first search */
+            node = node.firstChild;
+        } else { /* walk back up the tree */
+            while(node.nextSibling == null && node != root) {
+                node = node.parentNode;
+            }
+            node = node.nextSibling;
+        }
+    }
+    
+    
+    /* sort our list of words */
+    wordArr.sort();
+    
+    
+    /* append an iframe over the page so we can show results without obscuring the original page */
+    
+    theIframe = document.getElementById('tag-cloud');
+    
+    if (!theIframe) {
+        theIframe = document.createElement('iframe');
+        theIframe.width = '350px';
+        theIframe.height = '90%';
+        theIframe.id = 'tag-cloud';
+        theIframe.style.position = 'absolute';
+        theIframe.style.border = '1px solid #444';
+        theIframe.style.top = '80px';
+        theIframe.style.right = '80px';
+        theIframe.style.backgroundColor = '#ffffff';
+    }
+    
+    document.body.appendChild(theIframe);
+    
+    htmlStr = '';
+    
+    htmlStr += '<div style=\'padding:5px\'>';
+        
+    for ( i = 0; i < wordArr.length; i++) {
+        word = wordArr[i];
+        fontSize = (95 + ( 10 * wordMap[word])); /* increase font-size by about 10 percent per occurence */
+        htmlStr += '<span style=\'color: #1111ee; font-size:' + fontSize + '%;\'>' + word + '</span> ';
+        
+    }   
+    
+    htmlStr += '</div>';
+    
+    theIframe.contentDocument.body.innerHTML = htmlStr;
+    
+    theIframe.hidden = false;
+    
+    
+    
+}());">Word Cloud It!</a>
+
+<!-- test content -->
+<!-- p>
+    
+    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+    
+    It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+    
+</p -->
